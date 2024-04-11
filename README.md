@@ -14,3 +14,4 @@ Roll No. :2310990517 Email-ID : harshit0517.be23@chitkara.edu.in Role : Conducts
 
 In the first version we have made the simple hangman game code using python and in the upcoming version we will work on various other functionalities and we have to work on variables and identifiers that are nor declared properly and this game need to improve its version for more clarity of the users.
 
+Now we have tested the UI/UX of the game and now in the third version we are going to update the game with a set of rules and instructions.
