@@ -1,11 +1,17 @@
 import random
-import requests
 
 def choose_word(difficulty):
-    url = f"https://random-word-api.herokuapp.com/word?difficulty={difficulty}"
-    response = requests.get(url)
-    word = random.choice(response.json())
-    return word.lower()
+    with open("words.txt", "r") as file:
+        words = [word.strip().lower() for word in file.readlines()]
+
+    if difficulty == "easy":
+        words = [word for word in words if len(word) <= 6]
+    elif difficulty == "medium":
+        words = [word for word in words if 6 < len(word) <= 8]
+    elif difficulty == "hard":
+        words = [word for word in words if len(word) > 8]
+
+    return random.choice(words)
 
 def display_word(word, guessed_letters):
     displayed_word = ""
@@ -19,12 +25,16 @@ def display_word(word, guessed_letters):
 def hangman():
     print("Welcome to Hangman!")
     print("Try to guess the word.")
-    
+
     play_again = True
     total_score = 0
-    
+
     while play_again:
         difficulty = input("Choose difficulty level (easy/medium/hard): ").lower()
+        while difficulty not in ["easy", "medium", "hard"]:
+            print("Invalid difficulty level. Please choose from 'easy', 'medium', or 'hard'.")
+            difficulty = input("Choose difficulty level (easy/medium/hard): ").lower()
+
         word = choose_word(difficulty)
         guessed_letters = []
         attempts = 6
@@ -37,17 +47,10 @@ def hangman():
 
             if "_" not in displayed_word:
                 print("Congratulations! You've guessed the word:", word)
-                round_score += attempts * 10
+                round_score += attempts * len(word)
                 total_score += round_score
                 print("Round Score:", round_score)
                 print("Total Score:", total_score)
-                # Fetch and display word definition
-                response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
-                if response.status_code == 200:
-                    definition = response.json()[0]["meanings"][0]["definitions"][0]["definition"]
-                    print("Word Definition:", definition)
-                else:
-                    print("Failed to retrieve word definition.")
                 break
 
             guess = input("Guess a letter: ").lower()
