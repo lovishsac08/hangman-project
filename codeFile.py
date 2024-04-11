@@ -1,9 +1,11 @@
 import random
+import requests
 
-def choose_word():
-    with open("words.txt", "r") as file:
-        words = file.readlines()
-    return random.choice(words).strip().lower()
+def choose_word(difficulty):
+    url = f"https://random-word-api.herokuapp.com/word?difficulty={difficulty}"
+    response = requests.get(url)
+    word = random.choice(response.json())
+    return word.lower()
 
 def display_word(word, guessed_letters):
     displayed_word = ""
@@ -22,7 +24,8 @@ def hangman():
     total_score = 0
     
     while play_again:
-        word = choose_word()
+        difficulty = input("Choose difficulty level (easy/medium/hard): ").lower()
+        word = choose_word(difficulty)
         guessed_letters = []
         attempts = 6
         round_score = 0
@@ -38,6 +41,13 @@ def hangman():
                 total_score += round_score
                 print("Round Score:", round_score)
                 print("Total Score:", total_score)
+                # Fetch and display word definition
+                response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
+                if response.status_code == 200:
+                    definition = response.json()[0]["meanings"][0]["definitions"][0]["definition"]
+                    print("Word Definition:", definition)
+                else:
+                    print("Failed to retrieve word definition.")
                 break
 
             guess = input("Guess a letter: ").lower()
